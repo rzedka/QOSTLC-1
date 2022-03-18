@@ -18,7 +18,7 @@ close all
 
 N_smp = 1e6; % Num of samples of the random variable vector
 
-M = 32; % Num. of TX antennas
+M = 128; % Num. of TX antennas
 
 
 %% 1) General variables (for all systems)
@@ -55,7 +55,7 @@ clear Re_mat
 
 N_bins = 400;  % num. of histogram bins
 % x_max = 200;   % 
-x_rng = [-M M]/1 + M;
+x_rng = [-M M]/2 + M;
 x_cent = linspace(x_rng(1),x_rng(2),N_bins); % histogram bin-center vector
 % x_cent = linspace(0,x_max,N_bins);
 d_x = x_cent(2) - x_cent(1);
