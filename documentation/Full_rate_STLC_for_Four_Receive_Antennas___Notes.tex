@@ -1,0 +1,125 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{import}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{balance}
+\usepackage{geometry}
+\geometry{legalpaper,
+portrait,
+margin=2in,
+lmargin = 2cm,
+rmargin = 2cm,
+}
+
+\usepackage{multirow} % for tables with complicated header
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\E}{\operatorname{E}} % expectation
+\newcommand{\tr}{\operatorname{tr}} % trace
+\newcommand{\iDFT}{\operatorname{IDFT}} % 
+\newcommand{\DFT}{\operatorname{DFT}} % 
+\newcommand{\iFFT}{\operatorname{IFFT}} % 
+\newcommand{\iSFFT}{\operatorname{ISFFT}} % 
+\newcommand{\SFFT}{\operatorname{SFFT}} % 
+\newcommand{\FFT}{\operatorname{FFT}} % 
+\newcommand{\suma}{\operatorname{sum}} % 
+
+\title{Full-rate STLC for Four Receive Antennas - Notes }
+\author{radim.zedka@vut.cz }
+\date{March 2022}
+\maketitle
+
+
+% =================================================
+\section{Problem Description}
+
+Formula (6) in \cite{b_FullRate_STLC} is given by
+\begin{equation} \label{eq_xi_orig}
+    \xi = \rho \frac{\Big( \sum_{p=0}^{M-1} \gamma_{p} \pm 2\mathcal{R}\big\{ \epsilon_p\big\} \Big)^2}{4\sum_{p'=0}^{M-1}\gamma_{p'}},
+\end{equation}
+where 
+\begin{equation} \label{eq_gamma_p}
+    \gamma_p = \sum_{q=0}^{3} |h_{p,q}|^2.
+\end{equation}
+and
+\begin{equation} \label{eq_epsilon_p}
+    \epsilon_p = h_{p,0}h_{p,2}^* + h_{p,1}h_{p,3}^*.
+\end{equation}
+Each complex channel gain $h_{p,q}$ is composed of two i.i.d. normal variables $a_{p,q}, b_{p,q} \sim \mathcal{N}(0,1/2)$ which relate to channel gain by $h_{p,q} = a_{p,q} + jb_{p,q}$, where $j = \sqrt{-1}$.
+Formula \eqref{eq_gamma_p} then evolves into
+\begin{equation} \label{eq_gamma_p_2}
+    \gamma_p = \sum_{q=0}^{3} |a_{p,q}|^2 + |b_{p,q}|^2,
+\end{equation}
+and $\mathcal{R}\big\{ \epsilon_p\big\}$ is expressed as
+\begin{equation} \label{eq_epsilon_p_2}
+    \mathcal{R}\big\{ \epsilon_p\big\} = a_{p,0}a_{p,2} + b_{p,0}b_{p,2} + a_{p,1}a_{p,3} + b_{p,1}b_{p,3}.
+\end{equation}
+Formula \eqref{eq_xi_orig} may be expanded into purely real-valued form
+\begin{equation} \label{eq_xi_2}
+    \xi = \frac{\rho}{4} \frac{\Big( \sum_{p=0}^{M-1} \sum_{q=0}^{3} |a_{p,q}|^2 + |b_{p,q}|^2 \pm 2\mathcal{R}\big\{ \epsilon_p\big\} \Big)^2}{ \sum_{p'=0}^{M-1} \sum_{q=0}^{3} |a_{p',q}|^2 + |b_{p',q}|^2}.
+\end{equation}
+After Lemma 1 in \cite{b_FullRate_STLC} the receiver SNR is calculated via
+\begin{equation} \label{eq_xi_Lemma}
+    \xi =  \frac{\rho}{4} \sum_{p=0}^{M-1} \sum_{q=0}^{3} |a_{p,q}|^2 + |b_{p,q}|^2 .
+\end{equation}
+
+% =================================================
+\section{MATLAB Simulation}
+
+In MATLAB I created a script which generates the normal-distributed variables $a_{p,q}$ and $b_{p,q}$ in vectors of $10^6$ samples each. This way I calculate the histogram of formulas \eqref{eq_xi_2} and \eqref{eq_xi_Lemma} and I attempt to approximate it with analytical formulas of probability density functions of the Chi-squared distribution with $k$ degrees of freedom
+\begin{equation}\label{eq_ChiSquared_PDF}
+f_{X}(\xi) = \frac{1}{2^{k/2} \cdot \Gamma(k/2)} \xi^{k/2 - 1} e^{-\frac{\xi}{2}} \quad \forall \quad \xi \in \langle 0, \infty),
+\end{equation}
+and since variance of the normal variables $a_{p,q}$ and $b_{p,q}$ equals $1/2$ the chi-squared variable must be multiplied by some positive real scaling factor $c$. The PDF of such a scaled chi-squared random variable is given by
+\begin{equation}\label{eq_ChiSquared_PDF_scaled}
+ f_{cX}(\xi) =  \frac{\xi^{k/2 - 1} e^{-\frac{\xi}{2 \cdot c}}}{ (2c)^{k/2} \cdot \Gamma(k/2)} \quad \forall \quad \xi \in \langle 0, \infty).
+\end{equation}
+In Figure.~\ref{fig_PDF_1} I present the results of my MATLAB simulations for $M = 256$ and  $M = 512$. Formula \eqref{eq_xi_2} is approximated by \eqref{eq_ChiSquared_PDF_scaled} with $k = 2M$ and $c = \rho/2$. Formula \eqref{eq_xi_Lemma} is approximated by 
+\eqref{eq_ChiSquared_PDF_scaled} with $k = 8M$ and $c = \rho/8$. All simulations are done with $\rho = 1$.
+
+
+\begin{figure}[!h]
+\begin{tabular}{ll}
+\includegraphics[scale=0.53]{images/PDF_M_32.eps}
+&
+\includegraphics[scale=0.53]{images/PDF_M_64.eps}
+\end{tabular}
+\caption{PDF of \eqref{eq_xi_2} and \eqref{eq_xi_Lemma} with scaled chi-squared PDFs \eqref{eq_ChiSquared_PDF_scaled} for $M=32$ and $M=64$. }
+\label{fig_PDF_1}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{tabular}{ll}
+\includegraphics[scale=0.53]{images/PDF_M_256.eps}
+&
+\includegraphics[scale=0.53]{images/PDF_M_512.eps}
+\end{tabular}
+\caption{PDF of \eqref{eq_xi_2} and \eqref{eq_xi_Lemma} with scaled chi-squared PDFs \eqref{eq_ChiSquared_PDF_scaled} for $M=256$ and $M=512$. }
+\label{fig_PDF_2}
+\end{figure}
+
+% =================================================
+\section{Discussion}
+
+My MATLAB simulation attepts show that \eqref{eq_xi_2} is close to scaled chi-squared distribution with $k=2M$ and $c = \rho/2$. We can also see that even for $M$ rising from $32$ to $512$ the PDF of \eqref{eq_xi_2} is not approaching that of \eqref{eq_xi_Lemma}. 
+I would be very grateful for your advice.
+
+
+% ======================== References ====================
+\begin{thebibliography}{00}
+
+\bibitem{b_FullRate_STLC} S. -chan Lim and J. Joung, “Full-Rate Space–Time Line Code for Four Receive Antennas”, IEEE wireless communications letters, pp. 1-1, 2021.
+
+\end{thebibliography}
+
+
+\end{document}

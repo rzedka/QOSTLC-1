@@ -6,7 +6,7 @@ close all
 % Author: Radim Zedka
 % Description: In this script I attempt to simulate formula (6) from [1]
 % and approximate it with Chi-squared probability-density function (PDF). 
-% At high TX antenna counts (M > 100) the original Chi-squared formula does
+% At high TX antenna counts (M > 64) the original Chi-squared formula does
 % not work in MATLAB so I switch to the Normal distribution PDF which is
 % equivalent to Chi-squared with lots of freedom degrees.
 
@@ -18,7 +18,7 @@ close all
 
 N_smp = 1e6; % Num of samples of the random variable vector
 
-M = 128; % Num. of TX antennas
+M = 32; % Num. of TX antennas
 
 
 %% 1) General variables (for all systems)
@@ -55,7 +55,7 @@ clear Re_mat
 
 N_bins = 400;  % num. of histogram bins
 % x_max = 200;   % 
-x_rng = [-M M]/2 + M;
+x_rng = [-M M]/1 + M;
 x_cent = linspace(x_rng(1),x_rng(2),N_bins); % histogram bin-center vector
 % x_cent = linspace(0,x_max,N_bins);
 d_x = x_cent(2) - x_cent(1);
@@ -80,9 +80,7 @@ f_Xi_A8_theor_rho_chi = 1/(gamma(4*M)*(rho/4)^(4*M)).*x_cent.^(4*M-1).*exp(-x_ce
 
 %% Normal approximations of Chi-squared distribution
 
-% var_A2 = M+60; % Precise normal approximation for M=256
-% var_A2 = M+120; % Precise normal approximation for M=512
-var_A2 = M; 
+var_A2 = M; % Equivalent of the scaled chi-squared distribution for (c = rho/2, k = 2*M)
 f_Xi_A2_theor_rho_norm = 1/sqrt(2*pi*var_A2).*exp(-(x_cent-M).^2/2/var_A2);
 
 % Normal approximation of chi-squared  distribution (valid for high M):
@@ -102,11 +100,12 @@ plot(x_cent, Xi_A_pdf, 'b')
 grid on
 hold on
 % plot(x_cent, f_Xi_A_theor_rho, 'b--')
-plot(x_cent(1:4:end), f_Xi_A2_theor_rho_norm(1:4:end), 'bx')
-% plot(x_cent(1:4:end), f_Xi_A2_theor_rho_chi(1:4:end), 'bx')
+% plot(x_cent(1:4:end), f_Xi_A2_theor_rho_norm(1:4:end), 'bx')
+plot(x_cent(1:4:end), f_Xi_A2_theor_rho_chi(1:4:end), 'bx')
 plot(x_cent, f_Xi_A4_theor_rho_norm, 'r')
 plot(x_cent(1:4:end), Xi_B_pdf(1:4:end), 'm')
 plot(x_cent, f_Xi_A8_theor_rho_norm, 'mx')
+% plot(x_cent, f_Xi_A8_theor_rho_chi, 'mx')
 
 hold off
 x1 = xlabel('$\xi$ [-]','fontsize',14);
@@ -115,19 +114,19 @@ y1 = ylabel('$f_{Xi}(\xi)$ [-]','fontsize',14);
 sigmm = '\sigma';
 mii = '\mi';
 
-lgd1 = legend('$\xi_A$ formula (6)',...
-              '$\xi_A\sim \chi^2(2M)$',...
-              '$\xi_B\sim \chi^2(4M)$',...
-              '$\xi_B$ Lemma 1',...
-              '$\xi_B\sim \chi^2(8M)$',...
+lgd1 = legend('(6)',...
+              '(9) $k=2M,  c=\rho/2$',...
+              '(9) $k=4M,  c=\rho/4$',...
+              '(7)',...
+              '(9) $k=8M, c=\rho/8$',...
               'fontsize',12);
 
 str1 = sprintf('M = %d',M);
 title(str1,'fontsize',14)
           
-% xlim([-M M]/4 + M)
+xlim([-M M]/2 + M)
 % ylim([0 1.2])
-set(f1, 'position',[700 200 500 500])
+set(f1, 'position',[700 200 600 500])
 set(x1,'interpreter','latex')
 set(y1,'interpreter','latex')
 set(lgd1,'interpreter','latex')
