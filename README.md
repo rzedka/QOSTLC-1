@@ -1,7 +1,7 @@
 # QOSTLC-1
 This repository contains my MATLAB simulations of the quasi-orthogonal STLC systems.
 
-"...the **go to** statement should be abolished..." [[1]](#1).
+My current research is related to system published in [[1]](#1).
 
 ## References
 <a id="1">[1]</a> 
