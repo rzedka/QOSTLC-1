@@ -18,7 +18,7 @@ close all
 
 N_sym = 1e6; % Num of samples of the random variable vector
 
-M = 128; % Num. of TX antennas
+M = 64; % Num. of TX antennas
 
 
 %% 1) General variables (for all systems)
@@ -147,8 +147,8 @@ lgd1 = legend('(6)',...
 
 str1 = sprintf('M = %d',M);
 title(str1,'fontsize',14)
-
-set(f1, 'position',[700 200 600 500])
+xlim(xi_rng)
+set(f1, 'position',[700 200 800 400])
 set(x1,'interpreter','latex')
 set(y1,'interpreter','latex')
 set(lgd1,'interpreter','latex')
