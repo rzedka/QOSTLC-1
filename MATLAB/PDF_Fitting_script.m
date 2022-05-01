@@ -2,13 +2,13 @@ clc
 clear all
 close all
 
-% Date: 18.3.2022
-% Author: Radim Zedka
+% Date: 1.5.2022
+% Author: Radim Zedka, radim.zedka@vut.cz (Brno University of Technology)
 % Description: In this script I attempt to simulate formula (6) from [1]
-% and approximate it with Chi-squared probability-density function (PDF). 
-% At high TX antenna counts (M > 64) the original Chi-squared formula does
-% not work in MATLAB so I switch to the Normal distribution PDF which is
-% equivalent to Chi-squared with lots of freedom degrees.
+% and approximate it with Gamma probability-density function (PDF). 
+% The script allows to set an arbitrary antenna count "M".
+% All details can be found in:
+% documentation/Full_rate_STLC_for_Four_Receive_Antennas___Notes.pdf
 
 
 
@@ -50,6 +50,36 @@ Xi_B = 1/4*sum(gamma_mat,1); % (1 x N_sym)
 
 clear gamma_mat 
 clear Re_mat
+
+
+%% PDF fitting parameters for Gamma distribution
+
+switch M
+    case 1
+        
+    case 2
+        
+    case 4
+        
+    case 8
+        
+    case 16
+        
+    case 32
+        
+    case 64
+        
+    case 128
+        
+    case 256
+        
+    case 512
+        
+    otherwise
+        
+        
+end
+
 
 %%  Histogram calculations
 
